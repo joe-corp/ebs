@@ -15,4 +15,4 @@ def index():
     return 200, "Hello World"
 
 if __name__ == "__main__":
-    uvicorn.run(application, host="0.0.0.0", port=8000)
+    uvicorn.run(application, port=5000)
