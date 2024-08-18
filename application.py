@@ -1,28 +1,18 @@
-from flask import Flask
-
-def say_hello(username = "World"):
-    return '<p>Hello %s!</p>\n' % username
-
-header_text = '''
-    <html>\n<head> <title>EB Flask Test</title> </head>\n<body>'''
-instructions = '''
-    <p><em>Hint</em>: This is a RESTful web service! Append a username
-    to the URL (for example: <code>/Thelonious</code>) to say hello to
-    someone specific.</p>\n'''
-home_link = '<p><a href="/">Back</a></p>\n'
-footer_text = '</body>\n</html>'
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import JSONResponse
+from fastapi.requests import Request
+from fastapi.exceptions import HTTPException
+import boto3
+import os
+import uvicorn
 
 
-application = Flask(__name__)
+application = FastAPI()
 
-application.add_url_rule('/', 'index', (lambda: header_text +
-    say_hello() + instructions + footer_text))
 
-application.add_url_rule('/<username>', 'hello', (lambda username:
-    header_text + say_hello(username) + home_link + footer_text))
+@application.get('/')
+def index():
+    return 200, "Hello World"
 
 if __name__ == "__main__":
-    # Setting debug to True enables debug output. This line should be
-    # removed before deploying a production app.
-    application.debug = True
-    application.run()
+    uvicorn.run(application, host="0.0.0.0", port=8000)
