@@ -5,10 +5,11 @@ from fastapi.exceptions import HTTPException
 import boto3
 import os
 from dotenv import load_dotenv
+import uvicorn
 
 load_dotenv()
 
-app = FastAPI()
+application = FastAPI()
 
 sts_client = boto3.client('sts')
 
@@ -45,3 +46,6 @@ async def upload_image(file: UploadFile = File(...)):
     except Exception as e:
         print(f"Error uploading image: {e}")
         raise HTTPException(status_code=400, detail="Error uploading image")
+
+if __name__ == "__main__":
+    uvicorn.run(application, host="0.0.0.0", port=8000)
