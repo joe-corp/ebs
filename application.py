@@ -28,4 +28,4 @@ async def upload_image(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="Error uploading image")
 
 if __name__ == "__main__":
-    uvicorn.run(application, host="0.0.0.0", port=8000)
+    uvicorn.run(application, host="0.0.0.0", port=5000)
