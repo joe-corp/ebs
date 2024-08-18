@@ -1,34 +1,47 @@
-from flask import Flask
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import JSONResponse
+from fastapi.requests import Request
+from fastapi.exceptions import HTTPException
+import boto3
+import os
+from dotenv import load_dotenv
 
-# print a nice greeting.
-def say_hello(username = "World"):
-    return '<p>Hello %s!</p>\n' % username
+load_dotenv()
 
-# some bits of text for the page.
-header_text = '''
-    <html>\n<head> <title>EB Flask Test</title> </head>\n<body>'''
-instructions = '''
-    <p><em>Hint</em>: This is a RESTful web service! Append a username
-    to the URL (for example: <code>/Thelonious</code>) to say hello to
-    someone specific.</p>\n'''
-home_link = '<p><a href="/">Back</a></p>\n'
-footer_text = '</body>\n</html>'
+app = FastAPI()
 
-# EB looks for an 'application' callable by default.
-application = Flask(__name__)
+sts_client = boto3.client('sts')
 
-# add a rule for the index page.
-application.add_url_rule('/', 'index', (lambda: header_text +
-    say_hello() + instructions + footer_text))
+response = sts_client.assume_role(
+    RoleArn='arn:aws:iam::635933673805:role/devops_role',
+    RoleSessionName='MySessionName'
+)
 
-# add a rule when the page is accessed with a name appended to the site
-# URL.
-application.add_url_rule('/<username>', 'hello', (lambda username:
-    header_text + say_hello(username) + home_link + footer_text))
+credentials = response['Credentials']
 
-# run the app.
-if __name__ == "__main__":
-    # Setting debug to True enables debug output. This line should be
-    # removed before deploying a production app.
-    application.debug = True
-    application.run()
+assumed_role_session = boto3.Session(
+    aws_access_key_id=credentials['AccessKeyId'],
+    aws_secret_access_key=credentials['SecretAccessKey'],
+    aws_session_token=credentials['SessionToken']
+)
+
+s3 = assumed_role_session.client('s3')
+
+@app.get('/')
+def index():
+    return 200, "Hello World"
+
+@app.post("/upload_image")
+async def upload_image(file: UploadFile = File(...)):
+    bucket_name = os.environ['BUCKET_NAME']
+
+    try:
+        image_data = await file.read()
+        image_key = f"images/{file.filename}"
+
+        s3.put_object(Body=image_data, Bucket=bucket_name, Key=image_key, ContentType=file.content_type)
+
+        return JSONResponse(status_code=201, content={"message": "Image uploaded successfully"})
+    except Exception as e:
+        print(f"Error uploading image: {e}")
+        raise HTTPException(status_code=400, detail="Error uploading image")
