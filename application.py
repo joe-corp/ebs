@@ -11,7 +11,10 @@ load_dotenv()
 
 application = FastAPI()
 
-
+@application.get('/helo')
+def index():
+    return 200, "Hello World"
+    
 @application.get('/')
 def index():
     return 200, "Hello World"
