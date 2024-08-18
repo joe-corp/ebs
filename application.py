@@ -12,6 +12,6 @@ application = FastAPI()
 
 @application.get('/')
 def index():
-    return 200, "Hello World Staging"
+    return 200, "Hello World Staging 2"
 
 
