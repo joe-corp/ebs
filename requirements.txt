@@ -10,3 +10,4 @@ boto3==1.26.165
 fastapi[standard]
 pydantic
 uvicorn[standard]
+pylint
