@@ -3,5 +3,5 @@ application = FastAPI()
 @application.get('/')
 def index():
     """Main Page"""
-    return "Hello World yNew"
+    return "Hello World iNew"
 
