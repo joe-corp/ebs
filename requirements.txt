@@ -11,4 +11,5 @@ fastapi[standard]
 pydantic
 uvicorn[standard]
 pylint
+pytest-cov
 pytest

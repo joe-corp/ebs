@@ -4,3 +4,4 @@ application = FastAPI()
 def index():
     """Main Page"""
     return "Hello World New"
+
