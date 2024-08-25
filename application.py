@@ -1,17 +1,6 @@
-from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import JSONResponse
-from fastapi.requests import Request
-from fastapi.exceptions import HTTPException
-import boto3
-import os
-import uvicorn
-
-
+from fastapi import FastAPI
 application = FastAPI()
-
-
 @application.get('/')
 def index():
+    """Main Page"""
     return "Hello World"
-
-
